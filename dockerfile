@@ -16,6 +16,8 @@ WORKDIR /app/blogs
 
 # Install Python dependencies
 RUN pip install --upgrade pip && pip install -r requirements.txt
+# Pass dummy SECRET_KEY for collectstatic build step
+ENV SECRET_KEY=dummy-build-key-for-collectstatic
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
