@@ -8,7 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env('SECRET_KEY')
+# Added fallback for Docker build phase
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-dummy-key-for-docker-build')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ['*'] # Update with your domain in production
 
@@ -25,15 +26,16 @@ INSTALLED_APPS = [
     'blog',
 ]
 
-# Cloudinary Storage Settings
+# Cloudinary Storage Settings with fallbacks for Docker build phase
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dummy_cloud'),
+    'API_KEY': env('CLOUDINARY_API_KEY', default='000000000000000'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default='dummy_secret'),
 }
 
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # Add Whitenoise
@@ -45,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'blogs.urls'
 
 TEMPLATES = [
     {
@@ -63,11 +65,11 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'blogs.wsgi.application'
 
-# Neon DB Database configuration
+# Neon DB Database configuration with fallback for Docker build phase
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': env.db('DATABASE_URL', default='sqlite:///db.sqlite3')
 }
 
 STATIC_URL = 'static/'
